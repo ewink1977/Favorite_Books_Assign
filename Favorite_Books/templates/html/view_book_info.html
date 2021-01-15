@@ -1,0 +1,25 @@
+{% extends "html/base.html" %}
+{% block content %}
+<div class="row ml-3 p-2">
+    <div class="col-6">
+        <h2>{{ book.title }}</h2>
+        <p>Added by: {{ book.uploaded_by.first_name }} {{ book.uploaded_by.last_name }}</p>
+        <p>Added on: {{ book.created_at|date:"M j, Y @ g:i A" }}</p>
+        <p>Last updated on {{ book.updated_at|date:"M j, Y @ g:i A" }}</p>
+        <p>Description: {{ book.description }}</p>
+    </div>
+    <div class="col-6">
+        <h2>Users Who Liked This Book</h2>
+        <ul>
+            {% for userobj in book.users_who_fav.all %}
+            <li>{{ userobj.first_name }} {{ userobj.last_name }} 
+                {% if userobj.id == loggedinuser.id %}
+                | <a href="{% url 'unfavorite' book.id %}">Unfavorite</a>
+                {% endif %}
+            </li>
+            {% endfor %}
+        </ul>
+        <p><a href="{% url 'fav_book' book.id %}">Add To Favorites!</a></p>
+    </div>
+</div>
+{% endblock content %}

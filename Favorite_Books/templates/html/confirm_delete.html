@@ -1,0 +1,9 @@
+{% extends "html/base.html" %}
+{% block content %}
+<div class="row">
+    <div class="col-8 align-self-center">
+        <h1 class="text-center">Are you sure you want to delete {{ book.title }}?</h1>
+        <a href="{% url 'delete_book' book.id %}" class="btn btn-danger btn-lg btn-block">I am sure. Delete {{ book.title }}!</a>
+    </div>
+</div>
+{% endblock content %}

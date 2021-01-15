@@ -73,11 +73,49 @@ def add_book(request):
     else:
         return redirect('all_books')
 
-def edit_book(request):
-    pass
+def view_book(request, bookid):
+    this_book = Books.objects.get(id = bookid)
+    this_user = Users.objects.get(id = request.session['userid'])
+    context = {
+            'book': this_book,
+            'loggedinuser': this_user,
+            'pagetitle': this_book.title
+        }
+    if this_book.uploaded_by.id == this_user.id:
+        return render(request, 'html/edit_book_info.html', context)
+    else:
+        return render(request, 'html/view_book_info.html', context)
 
-def view_book(request):
-    pass
+def edit_book(request, bookid):
+    book_to_update = Books.objects.get(id = bookid)
+    if request.POST['editbooktitle']:
+        book_to_update.title = request.POST['editbooktitle']
+    if request.POST['editbookdesc']:
+        book_to_update.description = request.POST['editbookdesc']
+    book_to_update.save()
+    return redirect('view_book', bookid)
 
-def fav_book(request):
-    pass
+def delete_book_confirm(request, bookid):
+    context = {
+        'book': Books.objects.get(id = bookid),
+        'pagetitle': 'Confirm Deletion!!!'
+        }
+    return render(request, 'html/confirm_delete.html', context)
+
+def delete_book(request, bookid):
+    book_to_destroy = Books.objects.get(id = bookid)
+    book_to_destroy.delete()
+    messages.success(request, f"The book, { book_to_destroy.title }, has been deleted.")
+    return redirect('all_books')
+
+def fav_book(request, bookid):
+    fav_book = Books.objects.get(id = bookid)
+    user_faving = Users.objects.get(id = request.session['userid'])
+    user_faving.fav_books.add(fav_book)
+    return redirect('all_books')
+
+def delete_favorite(request, bookid):
+    fav_book = Books.objects.get(id = bookid)
+    user_faving = Users.objects.get(id = request.session['userid'])
+    user_faving.fav_books.delete(fav_book)
+    return redirect('all_books')

@@ -33,7 +33,7 @@
         <a href="{% url 'fav_book' book_obj.id %}"><p class="font-weight-normal">Favorite This Book</p></a>
         {% endif %}
         {% if loggedinuser in book_obj.users_who_fav.all %}
-        <p class="font-italic">This is one of your favorites!</p>
+        <p class="font-italic">This is one of your favorites! || <a href="{% url 'unfavorite' book_obj.id %}">Unfavorite</a></p>
         {% endif %}
         {% endfor %}
     </div>

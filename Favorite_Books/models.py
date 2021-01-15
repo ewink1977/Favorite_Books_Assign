@@ -37,6 +37,8 @@ class Users(models.Model):
 class Books(models.Model):
     title = models.CharField(max_length = 255)
     description = models.TextField()
+    created_at = models.DateTimeField(auto_now_add = True)
+    updated_at = models.DateTimeField(auto_now = True)
     uploaded_by = models.ForeignKey(
         Users,
         related_name = "books_added",
