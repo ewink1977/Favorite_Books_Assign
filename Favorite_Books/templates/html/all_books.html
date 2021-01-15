@@ -1,0 +1,41 @@
+{% extends "html/base.html" %}
+{% block content %}
+<div class="row mt-3 ml-3 mb-3">
+    <div class="col-6">
+        <h2>Add A Favorite Book!</h2>
+    </div>
+    <div class="col-6">
+        <h2>All Books!</h2>
+    </div>
+</div>
+<div class="row ml-3 p-2">
+    <div class="col-6">
+        <form action="{% url 'add_book' %}" method="POST">
+            {% csrf_token %}
+            <div class="form-group row">
+                <label for="newbooktitle" class="col-3 mr-2">Title: </label>
+                <input type="text" name="newbooktitle" id="newbooktitle" required>
+            </div>
+            <div class="form-group row">
+                <label for="newbookdesc" class="col-3 mr-2">Description: </label>
+                <textarea name="newbookdesc" id="newbookdesc" rows="5" class="form-control col-8" minlength="5">
+
+                </textarea>
+            </div>
+            <button type="submit" class="text-right btn btn-primary mb-2">Add Book</button>
+        </form>
+    </div>
+    <div class="col-6">
+        {% for book_obj in books %}
+        <a href="{% url 'view_book' book_obj.id %}"><p class="font-weight-bold">{{ book_obj.title }}</p></a>
+        <p class="font-weight-light">(Uploaded by {{ book_obj.uploaded_by.first_name }} {{ book_obj.uploaded_by.last_name }})</p>
+        {% if loggedinuser not in book_obj.users_who_fav.all %}
+        <a href="{% url 'fav_book' book_obj.id %}"><p class="font-weight-normal">Favorite This Book</p></a>
+        {% endif %}
+        {% if loggedinuser in book_obj.users_who_fav.all %}
+        <p class="font-italic">This is one of your favorites!</p>
+        {% endif %}
+        {% endfor %}
+    </div>
+</div>
+{% endblock content %}

@@ -24,8 +24,7 @@ def handle_registration(request):
         print(f"{newuser.id}, {newuser.first_name}, {newuser.password}")
         request.session['userid'] = newuser.id
         messages.success(request, f"User { request.POST['email'] } has been created successfully!")
-        # CHANGE THIS TO BOOK PAGE ONCE THAT IS MADE.
-        return redirect('home')
+        return redirect('all_books')
     else:
         return redirect('home')
 
@@ -34,17 +33,51 @@ def handle_login(request):
         user = Users.objects.filter(email = request.POST['email_login'])
         if user:
             loggedin_user = user[0]
-            print("USER LOCATED")
             if bcrypt.checkpw(request.POST['password_login'].encode(), loggedin_user.password.encode()):
-                print("PASSWORD VALIDATED")
                 request.session['userid'] = loggedin_user.id
                 request.session['loggedin'] = True
-                print(request.session['userid'])
                 messages.success(request, f"User {loggedin_user.first_name} has logged in!")
                 context = {
                     'loggedin_user': loggedin_user
                 }
-            # CHANGE THIS TO BOOK PAGE ONCE THAT IS MADE.
-            return redirect('home')
+            return redirect('all_books')
     else:
         return redirect('home')
+
+def logout(request):
+    request.session.flush()
+    request.session['loggedin'] = False
+    return redirect('home')
+
+def all_books(request):
+    if request.session['loggedin'] == True:
+        context = {
+            'loggedinuser': Users.objects.get(id = request.session['userid']),
+            'books': Books.objects.all(),
+        }
+        return render(request, 'html/all_books.html', context)
+    else:
+        messages.error(request, "Please log in before continuing!", extra_tags = 'danger')
+        return redirect('home')
+
+def add_book(request):
+    if request.method == 'POST':
+        adding_user = Users.objects.get(id = request.session['userid'])
+        new_book = Books.objects.create(
+            title = request.POST['newbooktitle'],
+            description = request.POST['newbookdesc'],
+            uploaded_by = adding_user,
+        )
+        adding_user.fav_books.add(new_book)
+        return redirect('all_books')
+    else:
+        return redirect('all_books')
+
+def edit_book(request):
+    pass
+
+def view_book(request):
+    pass
+
+def fav_book(request):
+    pass
